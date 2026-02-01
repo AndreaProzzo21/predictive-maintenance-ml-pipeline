@@ -1,0 +1,14 @@
+mqtt:
+  broker:
+    host: "mosquitto"
+    port: 1883
+    client_id: "pump001-collector"
+  topics:
+    telemetry: "factory/pump001/telemetry"
+    ground_truth: "factory/pump001/ground_truth"
+  qos: 1
+  keepalive: 60
+
+buffer:
+  merge_timeout: 30
+  max_queue_size: 1000

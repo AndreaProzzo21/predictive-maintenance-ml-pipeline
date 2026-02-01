@@ -1,0 +1,6 @@
+pydantic
+paho-mqtt
+typing
+PyYAML
+influxdb-client
+pandas

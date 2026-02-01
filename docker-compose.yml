@@ -1,0 +1,59 @@
+
+services:
+  pipeline:
+    build: .
+    container_name: pump_pipeline
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MQTT_BROKER_HOST=${MQTT_BROKER_HOST:-mosquitto}  # usa 'host.docker.internal' se broker è sul PC host
+      - MQTT_BROKER_PORT=1883
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_TOKEN=pump-super-secret-token
+      - INFLUX_ORG=pump-org
+      - INFLUX_BUCKET=pump-data
+    volumes:
+      - ./config:/app/config:ro
+      - ./data:/app/data
+    networks:
+      - pump_network
+    depends_on:
+      - mosquitto
+      - influxdb
+
+  
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    container_name: pump_mosquitto
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+    networks:
+      - pump_network
+  
+  influxdb:
+    image: influxdb:2.8
+    container_name: pump_influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword123
+      - DOCKER_INFLUXDB_INIT_ORG=pump-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=pump-data
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=pump-super-secret-token
+    volumes:
+      - influx_data:/var/lib/influxdb2
+    networks:
+      - pump_network
+    
+
+networks:
+  pump_network:
+    driver: bridge
+
+volumes:
+  influx_data:
