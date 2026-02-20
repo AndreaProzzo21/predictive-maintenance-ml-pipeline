@@ -3,13 +3,13 @@
 #include <ArduinoJson.h>
 
 // ================= CONFIGURAZIONE =================
-const char* ssid = "YOUR_WIFI";
-const char* password = "YOUR_PASSWORD";
+const char* ssid = "iPhone di Andrea";
+const char* password = "dogofiero";
 
-const char* mqtt_server = "YOUR_BROKER_HOST"; 
-const int mqtt_port = "YOUR_BROKER_PORT";
-const char* mqtt_user = "YOUR_USER";        
-const char* mqtt_password = "YOUR_PASSWORD";    
+const char* mqtt_server = "52.57.201.174"; // Cambia con il tuo broker
+const int mqtt_port = 1883;
+const char* mqtt_user = "";        // Oppure "" se anonimo
+const char* mqtt_password = "";    // Oppure ""
 
 // Topic separati per Fase 1
 const char* topic_telemetry = "factory/pump001/telemetry";     // Features per ML (X)
@@ -58,6 +58,7 @@ void setup() {
   delay(1000);
   
   Serial.println("=== PUMP-001 Phase 1: Data Collection Mode ===");
+  Serial.println("CHIAVE PRIMARIA: cycle_count come measurement_id");
   Serial.println("Topic 1: " + String(topic_telemetry) + " (features)");
   Serial.println("Topic 2: " + String(topic_ground_truth) + " (labels)");
   
@@ -150,7 +151,6 @@ void updateMachineDegradation() {
  * 4. Usura girante -> Pressione in calo (non riesce a spingere come prima)
  * 5. RPM controllato, ma con jitter che aumenta con le vibrazioni
  */
-
 void generateSensorData(float &vib_x, float &vib_y, float &vib_z, 
                        float &temp, float &current, float &pressure, 
                        int &rpm, float &vib_rms) {
@@ -174,7 +174,7 @@ void generateSensorData(float &vib_x, float &vib_y, float &vib_z,
     Serial.println("!!! Mechanical shock detected !!!");
   }
   
-  // Calcolo RMS totale 
+  // Calcolo RMS totale (feature importante per ML)
   vib_rms = sqrt(vib_x*vib_x + vib_y*vib_y + vib_z*vib_z);
   
   // 2. TEMPERATURA
@@ -260,7 +260,7 @@ void loop() {
   client.loop();
 
   // Aggiorna lo stato fisico interno della macchina (degradazione)
-  // Incrementa anche cycle_count che è la chiave primaria per misura
+  // Incrementa anche cycle_count che sarà la nostra chiave primaria
   updateMachineDegradation();
   
   // Genera letture sensori basate sullo stato fisico attuale
@@ -268,16 +268,17 @@ void loop() {
   int rpm;
   generateSensorData(vib_x, vib_y, vib_z, temp, current, pressure, rpm, vib_rms);
   
-  // Calcola ground truth basato su soglie fisiche 
+  // Calcola ground truth basato su soglie fisiche (come farebbe un tecnico esperto)
   String actual_state, failure_mode;
   int rul_hours;
   calculateGroundTruth(vib_rms, temp, current, actual_state, failure_mode, rul_hours);
   
-  // Recupera timestamp uptime per debug 
+  // Recupera timestamp uptime per debug (non per join tra tabelle)
   unsigned long esp_uptime = millis();
   
   // ============== PUBBLICAZIONE TOPIC 1: TELEMETRY (Features X) ==============
-
+  // Questo è ciò che vedrebbe un operatore o un sistema SCADA
+  // Il modello ML userà solo questi dati per predire lo stato
   StaticJsonDocument<1024> doc_telemetry;
   
   // CHIAVE PRIMARIA: measurement_id = cycle_count (univoco per ogni iterazione)
@@ -298,12 +299,12 @@ void loop() {
   
   char payload_telemetry[1024];
   serializeJson(doc_telemetry, payload_telemetry);
-
   // ============== PUBBLICAZIONE TOPIC 2: GROUND TRUTH (Label y) ==============
-
-  // Nella Fase 2/3 (testing/production) questo topic non esisterà più 
+  // Questo è il "segreto" che useremo per addestrare il ML
+  // Nella Fase 3 (produzione), questo topic non esisterà più!
   StaticJsonDocument<1024> doc_truth;
   
+  // STESSA CHIAVE PRIMARIA per permettere il join con telemetry
   doc_truth["measurement_id"] = cycle_count;  // Join key con topic_telemetry
   doc_truth["esp_uptime"] = esp_uptime;       // Debug: verifica invio contemporaneo
   doc_truth["device_id"] = "PUMP-001";
@@ -323,7 +324,7 @@ void loop() {
   delay(100);
   client.publish(topic_ground_truth, payload_truth);
   
-  // Debug seriale 
+  // Debug seriale formattato
   Serial.println("========================================");
   Serial.printf("MID: %d | Cycle: %d | Hours: %d\n", cycle_count, cycle_count, total_operating_hours);
   Serial.printf("Health: %.1f%% | Life: %.1f%% | State: %s\n", health_percent, life_consumed_percent, actual_state.c_str());
