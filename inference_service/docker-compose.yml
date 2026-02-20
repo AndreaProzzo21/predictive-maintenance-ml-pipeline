@@ -1,0 +1,23 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: inference_broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+    restart: unless-stopped
+
+  
+  inference_engine:
+    build: .
+    container_name: inference_engine
+    depends_on:
+      - mosquitto
+    volumes:
+      - ./src:/app/src
+      - ./models:/app/models
+      - ./data:/app/data
+    env_file:
+      - .env
+    restart: on-failure
