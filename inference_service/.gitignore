@@ -1,5 +1,5 @@
-# Specifico per il servizio di acquisizione
-mosquitto/data/
-mosquitto/log/
 data/
 models/
+inference_service/mosquitto/data/
+inference_service/mosquitto/log/
+mosquitto/
