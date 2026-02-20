@@ -6,10 +6,6 @@ This project implements an end-to-end **Cloud-Native Predictive Maintenance (PdM
 
 The architecture has evolved from simple data collection to a **Distributed Microservices Ecosystem** deployed on **AWS (EC2)**, capable of real-time inference and anomaly detection under stressed conditions.
 
-Hai perfettamente ragione a voler distinguere i servizi. In termini **MLOps**, quello che stai facendo è separare il **Training Path** (offline/batch) dal **Serving Path** (online/real-time). Questa distinzione è un punto di forza enorme per una tesi perché dimostra che hai capito come scalare un sistema industriale senza sovraccaricare il cloud.
-
-Ecco la sezione **System Architecture** riscritta per enfatizzare il disaccoppiamento dei servizi, la natura "Edge-to-Cloud" e il workflow dei modelli:
-
 ---
 
 ## 🏗️ System Architecture & Microservices
