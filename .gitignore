@@ -14,30 +14,36 @@ ENV/
 .env
 .env.*
 
-# --- MODELLI ML (Fondamentale!) ---
-# Non vogliamo caricare i file .pkl pesanti su Git se cambiano spesso
-# Meglio tenerli locali o caricarli manualmente
+# --- MODELS ML ---
 models/*.pkl
 *.joblib
 
 # --- DATI E LOG ---
-# Ignoriamo i database locali e i CSV generati
+**/config/
 data/*.csv
 data/*.json
 *.log
 influxdb_data/
 mosquitto/data/
 mosquitto/log/
+mosquitto
 
 # --- DOCKER ---
 .docker/
-# Se hai file di configurazione con password
 docker-compose.override.yml
 
-# --- ESP32 / ARDUINO ---
-# Cartelle di build e librerie locali
-.pio/
-.clang_complete
-.gcc-flags.json
-fp-info-cache
-build/
+# Ignora i file di ambiente ovunque
+**/.env
+**/.env.*
+
+# Ignora i modelli addestrati
+**/models/*.pkl
+**/models/*.joblib
+
+# Ignora le cartelle dati di Mosquitto e i CSV generati
+**/mosquitto/data/
+**/mosquitto/log/
+**/data/*.csv
+
+
+
