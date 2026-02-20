@@ -1,49 +1,9 @@
-# --- SISTEMA & IDE ---
+# Cose universali da ignorare ovunque
 .DS_Store
-Thumbs.db
 .vscode/
 .idea/
-
-# --- PYTHON ---
 __pycache__/
-*.py[cod]
-*$py.class
-.venv/
-venv/
-ENV/
 .env
 .env.*
-
-# --- MODELS ML ---
-models/*.pkl
-*.joblib
-
-# --- DATI E LOG ---
-**/config/
-data/*.csv
-data/*.json
-*.log
-influxdb_data/
-mosquitto/data/
-mosquitto/log/
-mosquitto
-
-# --- DOCKER ---
-.docker/
-docker-compose.override.yml
-
-# Ignora i file di ambiente ovunque
-**/.env
-**/.env.*
-
-# Ignora i modelli addestrati
-**/models/*.pkl
-**/models/*.joblib
-
-# Ignora le cartelle dati di Mosquitto e i CSV generati
-**/mosquitto/data/
-**/mosquitto/log/
-**/data/*.csv
-
-
-
+*.pkl
+*.csv

@@ -1,0 +1,5 @@
+# Specifico per il servizio di acquisizione
+mosquitto/data/
+mosquitto/log/
+data/
+models/
