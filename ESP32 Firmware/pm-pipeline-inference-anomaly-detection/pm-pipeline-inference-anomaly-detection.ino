@@ -3,16 +3,16 @@
 #include <ArduinoJson.h>
 
 // ================= CONFIGURAZIONE =================
-const char* ssid = "iPhone di Andrea";
-const char* password = "dogofiero";
+const char* ssid = "YOUR-SSID";
+const char* password = "YOUR-PASSWORD";
 
-const char* mqtt_server = "52.57.201.174"; // Cambia con il tuo broker
+const char* mqtt_server = "YOUR-BROKER-IP"; 
 const int mqtt_port = 1883;
-const char* mqtt_user = "";        // Oppure "" se anonimo
-const char* mqtt_password = "";    // Oppure ""
+const char* mqtt_user = "YOUR-MQTT-USER";        
+const char* mqtt_password = "YOUR-MQTT-PW";    
 
 // Topic per Fase 2 - Inferenza
-const char* topic_telemetry = "factory/pump001/telemetry";     // Features per ML (X)
+const char* topic_telemetry = "YOUR-TOPIC";     // Features per ML (X)
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -256,7 +256,7 @@ void loop() {
   if (!client.connected()) reconnect();
   client.loop();
 
-  // 1. Aggiorna lo stato fisico interno (SOLO INTERNO, non viene inviato)
+  // 1. Aggiorna lo stato fisico interno 
   updateMachineDegradation();
   
   // 2. Genera letture sensori
@@ -303,5 +303,5 @@ void loop() {
   Serial.printf("Payload: %s\n", payload);
   Serial.println("------------------------------------");
 
-  delay(10000); // 5 secondi tra le predizioni
+  delay(10000); // secondi tra le predizioni
 }
