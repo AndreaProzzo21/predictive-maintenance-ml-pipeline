@@ -1,6 +1,6 @@
 # 🏭 Industrial IoT & Cloud-Native Predictive Maintenance Pipeline
 
-## 🎯 Overview
+## Overview
 
 This project implements an end-to-end **Cloud-Native Predictive Maintenance (PdM)** pipeline for industrial centrifugal pumps. The system has transitioned from hardware-based simulation to a fully containerized **Digital Twin Environment**.
 
@@ -8,7 +8,7 @@ Instead of static datasets, the pipeline uses high-fidelity Python simulators th
 
 ---
 
-## 🏗️ System Architecture & Microservices
+## System Architecture & Microservices
 
 The project is engineered as a decoupled microservices architecture, where the simulation layer and the processing layer communicate via a high-performance MQTT backbone.
 
@@ -39,13 +39,13 @@ The project is engineered as a decoupled microservices architecture, where the s
 
 ---
 
-## 🗺️ Visual Architecture
+## Preliminar Component Architecture
 
 The diagram below highlights the separation between the **Training Data Generation** and the **Real-time Inference Service**.
 
 ```mermaid
 graph TD
-    subgraph Simulators ["DIGITAL TWIN LAYER (Dockerized)"]
+    subgraph Simulators ["DIGITAL TWIN LAYER"]
         A1[Training Simulator] -->|MQTT + Ground Truth| B
         A2[Production Simulator] -->|MQTT Raw Data| B
     end
@@ -72,7 +72,7 @@ graph TD
 
 ---
 
-## ⚡ Chaos Engineering & Operational Modes
+## Chaos Engineering & Operational Modes
 
 The **Production Simulator** includes a **Chaos Engine** to validate model robustness against unpredictable industrial events:
 
