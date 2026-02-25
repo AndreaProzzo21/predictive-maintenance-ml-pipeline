@@ -6,7 +6,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from influxdb_client import InfluxDBClient
-from infrastructure.storage.training_exporter import TrainingDataExporter
+from src.infrastructure.storage.training_exporter import TrainingDataExporter
 
 def main():
     parser = argparse.ArgumentParser(description='Esporta dati pompa da InfluxDB a CSV')
