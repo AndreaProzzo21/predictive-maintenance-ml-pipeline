@@ -106,14 +106,6 @@ The **Production Simulator** includes a **Chaos Engine** to validate model robus
 
 ---
 
-Ottima idea. Questa aggiunta dimostra che hai una visione chiara dell'evoluzione del sistema verso una piattaforma **Full-Stack IoT**.
-
-Possiamo strutturare questa parte sotto il titolo **"Future Work & Evolutionary Roadmap"**, spiegando le due possibili strade tecnologiche: una rapida e professionale (Grafana) e una custom (React + FastAPI).
-
-Ecco la sezione aggiornata in inglese da inserire nel tuo `README.md`:
-
----
-
 ## 🛤️ Project Roadmap & Future Evolutions
 
 * **Phase 1**: Python-based Digital Twin Simulators with advanced degradation logic.
