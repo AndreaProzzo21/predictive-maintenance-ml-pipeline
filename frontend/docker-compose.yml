@@ -1,0 +1,14 @@
+
+services:
+  frontend_local:
+    build: .
+    container_name: pdm_dashboard_local
+    ports:
+      - "3001:3000" # Mettiamo 3001 per non andare in conflitto con eventuali altri React
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    environment:
+      - WDS_SOCKET_PORT=3001
+    stdin_open: true # Necessario per React scripts
+    tty: true

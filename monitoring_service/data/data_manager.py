@@ -8,6 +8,7 @@ class DataManager:
         self.client = InfluxDBClient(url=url, token=token, org=org)
         self.bucket = bucket
         
+        # Ottimizzazione InfluxDB: Invio a batch ogni 50 record o 5 secondi
         self.write_api = self.client.write_api(write_options=WriteOptions(
             batch_size=50,
             flush_interval=5_000,
@@ -16,12 +17,13 @@ class DataManager:
         ))
 
     def _generate_random_maintenance_date(self):
-        """Genera una data casuale negli ultimi 180 giorni"""
+        """Fallback: Genera una data casuale negli ultimi 180 giorni"""
         days_ago = random.randint(1, 180)
         date = datetime.now() - timedelta(days=days_ago)
         return date.strftime("%Y-%m-%d")
 
     def save_prediction(self, data: dict):
+        """Converte il JSON ricevuto in un punto InfluxDB e lo salva"""
         point = Point("pump_diagnostics") \
             .tag("device_id", data.get("device_id", "unknown")) \
             .field("state", data.get("state", "UNKNOWN")) \
@@ -35,7 +37,7 @@ class DataManager:
             .field("vibration_y", float(data.get("vibration_y", 0.0))) \
             .field("vibration_z", float(data.get("vibration_z", 0.0)))
         
-        # Se la data non c'è, ne generiamo una casuale
+        # Gestione data manutenzione: usa quella del payload o ne genera una
         last_maint = data.get("last_maintenance")
         if not last_maint:
             last_maint = self._generate_random_maintenance_date()
@@ -45,6 +47,7 @@ class DataManager:
         self.write_api.write(bucket=self.bucket, record=point)
     
     def get_latest_pumps_data(self):
+        """Esegue query Flux per ottenere l'ultimo stato noto di ogni pompa"""
         query_api = self.client.query_api()
         query = f'''
         from(bucket: "{self.bucket}")

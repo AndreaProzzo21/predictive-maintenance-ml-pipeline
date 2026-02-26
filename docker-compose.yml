@@ -1,0 +1,84 @@
+
+services:
+  # --- INFRASTRUTTURA ---
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: inference_broker
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./inference_service/mosquitto/config:/mosquitto/config:ro
+    networks:
+      - pump_network
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:2.8
+    container_name: pump_influxdb_monitor
+    ports:
+      - "8087:8086"
+    env_file: ./monitoring_service/.env
+    volumes:
+      - monitor_influx_data:/var/lib/influxdb2
+    networks:
+      - pump_network
+
+  # --- MICROSERVIZI ---
+  inference_engine:
+    build: ./inference_service
+    container_name: inference_engine
+    depends_on:
+      - mosquitto
+    volumes:
+      - ./inference_service/src:/app/src
+      - ./inference_service/models:/app/models
+      - ./inference_service/data:/app/data
+    env_file: ./inference_service/.env
+    networks:
+      - pump_network
+    restart: on-failure
+
+  monitoring_service:
+    build: ./monitoring_service
+    container_name: pump_monitoring_service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - influxdb
+    env_file: ./monitoring_service/.env
+    networks:
+      - pump_network
+    restart: unless-stopped
+
+  pump_simulator:
+    build: ./pump_fleet_simulator
+    container_name: fleet_simulator
+    depends_on:
+      - mosquitto
+    env_file: ./pump_fleet_simulator/.env
+    networks:
+      - pump_network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: pdm_dashboard_local
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    environment:
+      - WDS_SOCKET_PORT=3001
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+    networks:
+      - pump_network
+
+networks:
+  pump_network:
+    driver: bridge
+
+volumes:
+  monitor_influx_data:

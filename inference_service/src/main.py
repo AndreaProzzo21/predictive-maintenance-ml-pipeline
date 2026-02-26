@@ -3,7 +3,9 @@ import logging
 from mqtt_fetcher import MQTTPumpFetcher
 from predictor import PumpPredictor
 from inference_manager import InferenceManager
+import warnings
 
+warnings.filterwarnings("ignore", category=UserWarning)
 # Setup Logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("Main")

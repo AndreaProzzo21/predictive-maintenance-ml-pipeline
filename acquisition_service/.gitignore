@@ -1,4 +1,0 @@
-mosquitto/*
-data/
-acquisition_service/mosquitto/data/
-acquisition_service/mosquitto/log/

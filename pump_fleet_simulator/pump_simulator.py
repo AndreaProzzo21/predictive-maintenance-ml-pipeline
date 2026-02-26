@@ -4,7 +4,7 @@ import random
 import math
 import threading
 import os
-from datetime import datetime, timedelta  # <--- Aggiunto
+from datetime import datetime, timedelta
 import paho.mqtt.client as mqtt
 
 class PumpSimulator:
@@ -17,7 +17,6 @@ class PumpSimulator:
         self.start_delay = start_delay
 
         # --- GENERAZIONE DATA MANUTENZIONE FISSA ---
-        # Genera una data casuale tra 10 e 200 giorni fa
         random_days_ago = random.randint(10, 200)
         self.last_maintenance = (datetime.now() - timedelta(days=random_days_ago)).strftime("%Y-%m-%d")
 
@@ -35,8 +34,6 @@ class PumpSimulator:
         }
 
         self.client = mqtt.Client(client_id=f"Sim-{pump_id}")
-
-    # ... [Metodi _setup_mode_params, update_degradation, generate_data, apply_chaos rimangono invariati] ...
 
     def _setup_mode_params(self):
         if self.mode == "STRESS":
@@ -76,12 +73,11 @@ class PumpSimulator:
     def run(self):
         try:
             if self.start_delay > 0:
-                print(f"⏳ [{self.pump_id}] Waiting {self.start_delay:.1f}s before starting...")
+                # Log iniziale silenzioso (solo per debug all'avvio)
                 time.sleep(self.start_delay)
 
             self.client.connect(self.broker, self.port)
-            print(f"🚀 [{self.pump_id}] STARTED (Mode: {self.mode}) | Last Maint: {self.last_maintenance}")
-
+            
             while True:
                 self.update_degradation()
                 v_x, v_y, v_z, v_rms, t, curr, p, rpm = self.generate_data()
@@ -99,31 +95,39 @@ class PumpSimulator:
                     "pressure": round(p, 2),
                     "rpm": int(rpm),
                     "health_percent": round(self.health_percent, 1),
-                    "last_maintenance": self.last_maintenance  # <--- Inviata in ogni messaggio
+                    "last_maintenance": self.last_maintenance 
                 }
 
                 self.client.publish(self.topic, json.dumps(payload))
 
-                if self.cycle_count % 10 == 0:
-                    print(f"📊 [{self.pump_id}] Life: {self.cycle_count}/{self.total_life_cycles} | Health: {self.health_percent:.1f}%")
+                # --- LOGGING SMART ---
+                # Logghiamo lo stato solo se scende sotto il 70% (Degrado evidente)
+                if self.health_percent < 70:
+                    # Log ogni 10 cicli se in Warning/Fault
+                    if self.cycle_count % 10 == 0:
+                        print(f"⚠️  ALERT Simulator: [{self.pump_id}] High Wear! Health: {self.health_percent:.1f}%")
+                
+                # Log di routine molto diradato per non intasare (ogni 100 cicli)
+                elif self.cycle_count % 100 == 0:
+                    print(f"✅ Simulator Running: [{self.pump_id}] Cycle {self.cycle_count} | Health OK")
 
                 time.sleep(self.interval)
         except Exception as e:
             print(f"❌ [{self.pump_id}] Error: {e}")
 
-# ... [Il resto del blocco __main__ rimane uguale] ...
 if __name__ == "__main__":
-    BROKER = os.getenv("MQTT_BROKER", "172.17.0.1")
+    BROKER = os.getenv("MQTT_BROKER", "mosquitto") # Usiamo il nome del servizio docker
     PORT = int(os.getenv("MQTT_PORT", 1883))
     MODE = os.getenv("SIMULATION_MODE", "NOMINAL")
-    NUM_PUMPS = int(os.getenv("NUM_PUMPS", 5))
+    NUM_PUMPS = int(os.getenv("NUM_PUMPS", 50))
 
-    print(f"🏗️ Starting simulation for {NUM_PUMPS} pumps in {MODE} mode...")
+    print(f"🏗️  INITIALIZING FLEET: {NUM_PUMPS} pumps | Mode: {MODE}")
 
     threads = []
     for i in range(NUM_PUMPS):
         p_id = f"PUMP-{i+1:03d}"
-        random_delay = random.uniform(2, 10) # Ho ridotto il delay per i test
+        # Start delay differenziato per non sovraccaricare il broker all'avvio
+        random_delay = random.uniform(200, 400) 
         
         sim = PumpSimulator(p_id, BROKER, PORT, "factory/pumps", mode=MODE, start_delay=random_delay)
         
@@ -132,8 +136,10 @@ if __name__ == "__main__":
         t.start()
         threads.append(t)
 
+    print(f"🚀 ALL SIMULATORS THREADS STARTED. Monitoring active...")
+
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print("\n🛑 Simulazione interrotta.")
+        print("\n🛑 Simulation stopped by user.")
