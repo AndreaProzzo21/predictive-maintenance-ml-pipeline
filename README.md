@@ -170,10 +170,6 @@ The upcoming evolution focuses on a centralized monitoring dashboard to visualiz
 
 ---
 
-Certamente, aggiungere una sezione sulla sicurezza è fondamentale per dimostrare una visione "Production-Ready" del progetto. Ecco la sezione **Security** da inserire nel tuo README, scritta in inglese per coerenza con il resto del documento.
-
----
-
 ### 🛡️ Next Developments: Security & Access Control
 
 The current architecture is optimized for functional validation; however, moving toward an industrial deployment requires a robust security layer. The following enhancements are planned:
