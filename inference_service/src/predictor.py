@@ -33,7 +33,6 @@ class PumpPredictor:
             state_label = self.le.inverse_transform([class_idx])[0]
             
             # 2. Predizione della SALUTE (Regressione)
-            # Usiamo .clip(0, 100) per evitare che il modello sputi fuori valori assurdi tipo -5% o 105%
             predicted_health = float(self.reg.predict(X_scaled)[0])
             predicted_health = max(0, min(100, predicted_health))
             

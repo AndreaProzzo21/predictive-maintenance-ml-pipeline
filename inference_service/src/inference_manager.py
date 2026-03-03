@@ -33,18 +33,15 @@ class InferenceManager:
 
         data['inference_timestamp'] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # --- LOGGING EFFICIENTE ---
         current_state = data['state']
         
-        # 1. Se lo stato è critico, logghiamo SEMPRE
         if current_state != "HEALTHY":
             logger.warning(f"🚨 CRITICAL: [{pump_id}] State: {current_state} | Health: {data['health_percent']}%")
         
-        # 2. Se lo stato è HEALTHY, logghiamo solo una riga ogni 50 messaggi ricevuti
         elif self.message_counter % 50 == 0:
             logger.info(f"✅ Healthy Stream: Processate {self.message_counter} inferenze. Last: [{pump_id}] at {data['health_percent']}%")
 
-        # Salvataggio e Pubblicazione
+        
         self._save_to_device_csv(pump_id, data)
 
         if self.mqtt_client:
