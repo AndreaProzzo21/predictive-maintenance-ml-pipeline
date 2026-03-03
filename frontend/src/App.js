@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_URL = "http://3.69.167.220:8080/api/v1/status";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8080/api/v1/status";
 const ITEMS_PER_PAGE = 15;
 
 function App() {
