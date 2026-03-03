@@ -170,4 +170,16 @@ The upcoming evolution focuses on a centralized monitoring dashboard to visualiz
 
 ---
 
+Certamente, aggiungere una sezione sulla sicurezza è fondamentale per dimostrare una visione "Production-Ready" del progetto. Ecco la sezione **Security** da inserire nel tuo README, scritta in inglese per coerenza con il resto del documento.
 
+---
+
+### 🛡️ Next Developments: Security & Access Control
+
+The current architecture is optimized for functional validation; however, moving toward an industrial deployment requires a robust security layer. The following enhancements are planned:
+
+* **API Security (JWT Bearer Tokens)**: Implementing **OAuth2 with Password Flow and JWT (JSON Web Tokens)** to protect FastAPI endpoints. This ensures that only authenticated clients (or services) can fetch fleet telemetry or trigger diagnostic exports.
+* **Frontend Guarding**: Integrating **React Context and Protected Routes** to prevent unauthorized access to the Monitoring Dashboard.
+* **Infrastructure Hardening**: Utilizing **Terraform** to further restrict AWS Security Groups, implementing a **Private Subnet** for the database and broker, and exposing only the Frontend/API Gateway via an encrypted **HTTPS (TLS)** listener.
+
+---
