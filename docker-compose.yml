@@ -71,8 +71,7 @@ services:
     environment:
       - WDS_SOCKET_PORT=3001
       - CHOKIDAR_USEPOLLING=true
-    env_file: 
-      - .env
+      
     stdin_open: true
     tty: true
     networks:
