@@ -38,27 +38,21 @@ The project is engineered as a decoupled microservices architecture, where the s
 * **Real-time Pipeline**: `Raw MQTT Data` → `StandardScaler` → `Random Forest Predictor` → `Persistent JSON/CSV Logs`.
 
 ### 📊 Service C: Monitoring Layer (Backend & Storage)
+
 * **Technology**: FastAPI, InfluxDB 2.8.
-
 * **Role**: The core data management hub.
-
 * **Data Manager**: Persists telemetry and predictions into InfluxDB using optimized batch writes.
-
 * **Core Manager**: Handles business logic, state filtering, and smart logging to highlight critical anomalies.
-
 * **API Server**: Exposes REST endpoints (/api/v1/status) for the frontend.
 
 ### 💻 Service D: Presentation Layer (Frontend)
-Technology: React.js, Axios.
 
+* **Technology**: React.js, Axios.
 * **Role**: A dedicated operational dashboard for end-users.
-
 * **Live Fleet Monitoring**: Automatic data refresh every 3 seconds.
-
 * **Global Analytics: High-level** stats on total assets, average health, and failure counts.
-
 * **Detail Views**: Expandable panels for deep-dives into sensory data (Vibration X/Y/Z, Pressure, Current).
-
+  
 ---
 
 ## 🏗️ Integrated System Architecture & MLOps Workflow
